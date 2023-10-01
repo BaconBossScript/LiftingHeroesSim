@@ -94,6 +94,7 @@ Tp2Tab:AddButton({
 
 Tp2Tab:AddLabel("Island")
 
+Tp2Tab:AddLabel("You Must Unlock First To Tp")
 
 Tp2Tab:AddButton({
 	Name = "Main Island",
