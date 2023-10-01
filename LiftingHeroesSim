@@ -1,0 +1,237 @@
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+local Window = OrionLib:MakeWindow({Name = "BaconBoss Hub | Lifting Heroes Simulator", HidePremium = false, SaveConfig = true, ConfigFolder = "OrionTest"})
+
+
+getgenv().tpPlace = "string"
+
+function Teleport(teleportPlace)
+    local player = game.Players.LocalPlayer
+    player.Character.HumanoidRootPart.CFrame = teleportPlace
+end
+
+local TpTab = Window:MakeTab({
+	Name = "Main",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+
+local Tp3Tab = Window:MakeTab({
+	Name = "Egg",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+local Tp2Tab = Window:MakeTab({
+	Name = "Tp",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+local Tp4Tab = Window:MakeTab({
+	Name = "Others",
+	Icon = "rbxassetid://4483345998",
+	PremiumOnly = false
+})
+
+_G.train = true
+function train()
+      while _G.train == true do
+        game:GetService("ReplicatedStorage"):WaitForChild("Functions"):WaitForChild("LiftWeight"):InvokeServer()
+     wait(0)
+    end
+end
+
+TpTab:AddToggle({
+	Name = "Auto Train",
+	Default = false,
+	Callback = function(Value)
+		_G.train = Value
+        train()
+	end    
+})
+
+_G.sell = true
+function sell()
+      while _G.sell == true do
+        game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("Sell"):FireServer()
+        wait(0.5)
+    end
+end
+
+TpTab:AddToggle({
+	Name = "Auto Sell",
+	Default = false,
+	Callback = function(Value)
+		_G.sell = Value
+        sell()
+	end    
+})
+
+Tp2Tab:AddLabel("Area")
+
+
+Tp2Tab:AddButton({
+	Name = "Basic Training Area | Req: 500 Strenght",
+	Callback = function()
+      Teleport(game:GetService("Workspace")["Training Areas"].TrainingArea1.Block.CFrame)
+    end
+}) 
+
+Tp2Tab:AddButton({
+	Name = "Lego Training Area | Req: 2.5K Strenght",
+	Callback = function()
+      Teleport(game:GetService("Workspace")["Training Areas"].TrainingArea2.Block.CFrame)
+    end
+}) 
+
+Tp2Tab:AddButton({
+	Name = "Lava Training Area | Req: 20K Strenght",
+	Callback = function()
+      Teleport(game:GetService("Workspace")["Training Areas"].TrainingArea3.Block.CFrame)
+    end
+}) 
+
+Tp2Tab:AddLabel("Island")
+
+
+Tp2Tab:AddButton({
+	Name = "Main Island",
+	Callback = function()
+      Teleport(game:GetService("Workspace").Eggs["Starter Egg"].TouchPart.CFrame)
+    end
+}) 
+
+Tp2Tab:AddButton({
+	Name = "Winter Island | Req: 150K Strenght",
+	Callback = function()
+      Teleport(game:GetService("Workspace").Eggs["Snow Egg"].TouchPart.CFrame)
+    end
+}) 
+
+Tp2Tab:AddButton({
+	Name = "Aqua Island | Req: 15M Strenght",
+	Callback = function()
+      Teleport(game:GetService("Workspace").Maps.AtlantisMap:GetChildren()[25].Roof.CFrame)
+    end
+}) 
+
+Tp2Tab:AddButton({
+	Name = "Wizard Island | Req: 2.5B Strenght",
+	Callback = function()
+      Teleport(game:GetService("Workspace").Eggs["Wizard Egg"].TouchPart.CFrame)
+    end
+}) 
+
+_G.segg = "Starter Egg"
+_G.egg = true
+function egg()
+      while _G.egg == true do
+        game:GetService("ReplicatedStorage"):WaitForChild("Functions"):WaitForChild("PetFunctions"):InvokeServer("HatchPet", _G.segg, 1, "NotAuto")
+        wait(0)
+    end
+end
+
+Tp3Tab:AddToggle({
+	Name = "Auto Hatch",
+	Default = false,
+	Callback = function(Value)
+		_G.egg = Value
+        egg()
+	end    
+})
+
+Tp3Tab:AddDropdown({
+	Name = "Select",
+	Default = "Starter Egg",
+	Options = {"Starter Egg", "Snow Egg", "Wizard Egg"},
+	Callback = function(Value)
+	    _G.segg = Value  
+	end    
+})
+
+Tp4Tab:AddButton({
+    Name = "Anti AFK",
+    Callback = function()
+        local vu = game:GetService("VirtualUser")
+        game:GetService("Players").LocalPlayer.Idled:connect(function()
+            vu:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+            wait(1)
+            vu:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+        end)
+    end
+})
+
+Tp4Tab:AddButton({
+    Name = "Delete Time Hold Button E",
+    Callback = function()
+        while true do
+            for _, v in next, workspace:GetDescendants() do
+                if v:IsA("ProximityPrompt") then
+                    v.HoldDuration = 0
+                end
+            end
+            wait(1) 
+        end
+    end
+})
+
+Tp4Tab:AddButton({
+    Name = "Server Less People",
+    Callback = function()
+        local Http = game:GetService("HttpService")
+        local TPS = game:GetService("TeleportService")
+        local Api = "https://games.roblox.com/v1/games/"
+
+        local _place = game.PlaceId
+        local _servers = Api.._place.."/servers/Public?sortOrder=Asc&limit=100"
+
+        local function ListServers(cursor)
+            local Raw = game:HttpGet(_servers .. ((cursor and "&cursor="..cursor) or ""))
+            return Http:JSONDecode(Raw)
+        end
+
+        local Server, Next
+        repeat
+            local Servers = ListServers(Next)
+            Server = Servers.data[1]
+            Next = Servers.nextPageCursor
+        until Server
+
+        TPS:TeleportToPlaceInstance(_place, Server.id, game.Players.LocalPlayer)
+    end
+})
+
+Tp4Tab:AddButton({
+    Name = "Server Hop",
+    Callback = function()
+        local module = loadstring(game:HttpGet("https://raw.githubusercontent.com/LeoKholYt/roblox/main/lk_serverhop.lua"))()
+        module:Teleport(game.PlaceId)
+    end
+})
+
+Tp4Tab:AddSlider({
+	Name = "Change Speed Power",
+	Min = 16,
+	Max = 1000,
+	Default = 5,
+	Color = Color3.fromRGB(255,255,255),
+	Increment = 1,
+	ValueName = "Speed",
+	Callback = function(Value)
+		game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+	end    
+})
+
+Tp4Tab:AddSlider({
+	Name = "Change Jump Power",
+	Min = 16,
+	Max = 1000,
+	Default = 5,
+	Color = Color3.fromRGB(255,255,255),
+	Increment = 1,
+	ValueName = "Jump",
+	Callback = function(Value)
+		game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
+	end    
+})
